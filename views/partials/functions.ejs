@@ -1,0 +1,96 @@
+<%
+    postalRateCalc = function(type, weight){
+        var price = 0;
+        switch(type){
+            case "letters_s":
+                if(weight > 3.5){
+                    console.log("large letter");
+                    price = large(weight);
+                }else if(weight <= 3.5 && weight > 3){
+                    price = 1.13;
+                }else if(weight <= 3 && weight > 2){
+                    price = 0.92;
+                }else if(weight <= 2 && weight > 1){
+                    price = 0.71;
+                }else if(weight <= 1 && weight > 0){
+                    price = 0.50;
+                }else{
+                    price = 0;
+                }
+            break;
+            case "letters_m":
+                if(weight > 3.5){
+                    console.log("large letter");
+                    price = large(weight);
+                }else if(weight <= 3.5 && weight > 3){
+                    price = 1.10;
+                }else if(weight <= 3 && weight > 2){
+                    price = 0.89;
+                }else if(weight <= 2 && weight > 1){
+                    price = 0.68;
+                }else if(weight <= 1 && weight > 0){
+                    price = 0.47;
+                }else{
+                    price = 0;
+                }
+            break;
+            case "post":
+                price = 0.35;
+            break;
+            case "large_env":
+                price = large(weight);
+            break;
+            case "package":
+                price = pack(weight);
+            break;
+            case "key_ident":
+                price = key(weight);
+        }
+        return price;
+    }
+    pack = function(weight){
+        var amount = 0;
+        if(weight <= 4 && weight > 0){
+            amount = 3.50;
+            return amount;
+        }else if(weight <= 8 && weight > 4){
+            amount = 3.75;
+            return amount;
+        }else if(weight > 8){
+            amount = 3.75 + ((weight-8) * 0.35);
+            return amount;
+        }else{
+            amount = 0;
+            return amount;
+        }
+    }
+    key = function(weight){
+        var amount = 0;
+        if(weight <= 4 && weight > 0){
+            amount = 3.54;
+            return amount;
+        }else if(weight > 4){
+            amount = 3.54 + ((weight-4) * 0.18);
+            return amount;
+        }else{
+            amount = 0;
+            return amount;
+        }
+    }
+    large = function(weight){
+        var amount = 0;
+        console.log(weight);
+        if(weight > 0 && weight <= 1){
+            amount = 1.00;
+            return amount;
+        }else if(weight > 1){
+            console.log("Greater than 1");
+            amount = 1 + ((weight - 1) * 0.21);
+            console.log(amount);   
+            return amount;
+        }else{
+            amount = 0;
+            return amount;
+        }
+    }
+%>

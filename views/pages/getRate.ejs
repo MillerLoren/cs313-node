@@ -1,0 +1,12 @@
+<% include ../partials/functions %>
+<% include ../partials/header.ejs %>
+<meta name="description" content="Postal rate calculator.">
+<title>Rates</title>
+</head>
+<body>
+<% include ../partials/nav.ejs %>
+<div id="content">
+        <h2>Price</h2>
+        <p>Your price is: $<%= postalRateCalc(type, weight) %></p>
+</div>
+<% include ../partials/footer.ejs %>

@@ -1,5 +1,5 @@
 {
-  "name": "CS313-Node",
+  "name": "cs313-node",
   "version": "0.3.0",
   "description": "A sample Node.js app using Express 4",
   "engines": {
@@ -12,11 +12,9 @@
   },
   "dependencies": {
     "body-parser": "^1.18.2",
-    "cool-ascii-faces": "1.3.4",
+    "dotenv": "^5.0.1",
     "ejs": "2.5.6",
     "express": "4.15.2",
-    "express-validator": "^5.0.3",
-    "pg": "6.x",
     "pg-promise": "^8.2.2"
   },
   "devDependencies": {
@@ -25,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/heroku/node-js-getting-started"
+    "url": "https://github.com/MillerLoren/cs313-node"
   },
   "keywords": [
     "node",

@@ -2,6 +2,15 @@
     <meta name="description" content="The landing page of my school project. You can find assignments and source code on this page and others.">
     <title>Home</title>
   </head>
+  <script>
+    // Check that service workers are registered
+    if ('serviceWorker' in navigator) {
+      // Use the window load event to keep the page load performant
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('scripts/sw.js');
+      });
+    }
+    </script>
   <body>
   
     <% include ../partials/nav.ejs %>

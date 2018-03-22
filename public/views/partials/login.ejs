@@ -1,0 +1,91 @@
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#login_tab">Login</a></li>
+    <li><a data-toggle="tab" href="#register_tab">Register</a></li>
+    <li style="float:right;"><a href="/guest">Continue as Guest</a></li>
+  </ul>
+  
+  <div class="tab-content">
+    <div id="login_tab" class="tab-pane fade in active"> 
+      <form id="login" method="POST">
+        <div class="form-group">
+          <label for="login_username">Username</label>
+          <input type="text" class="form-control" id="login_username" name="login_username" placeholder="Enter Username">
+        </div>
+        <div class="form-group">
+          <label for="login_pasword">Password</label>
+          <input type="password" class="form-control"id="login_password" name="login_password" placeholder="Password">
+        </div>
+        <div class="form-group">
+          <small id="result" class="text-muted"></small>
+        </div>
+        <input type="submit" id="loginBtn" class="btn btn-success" value="Login"/>
+      </form>
+    </div>
+    <div id="register_tab" class="tab-pane fade">
+      <form id="register" method="POST">
+        <div class="form-group">
+          <label for="register_username">Username</label>
+          <input type="text" class="form-control" id="register_username" name="register_username" placeholder="Enter Username">
+        </div>
+        <div class="form-group">
+          <label for="register_name">First & Last Name</label>
+          <input type="text" class="form-control" id="register_name" name="register_name" placeholder="First Last Name">
+        </div>
+        <div class="form-group">
+          <label for="register_pasword">Password</label>
+          <input type="password" class="form-control" id="register_password" name="register_password" placeholder="Password">
+        </div>
+        <div class="form-group">
+          <small id="registerResult" class="text-muted"></small>
+        </div>
+        <input type="submit" id="registerBtn" class="btn btn-success" value="Register"/>
+      </form>
+    </div>
+  </div>
+  <script>
+      $('#login').submit(function(e){
+        e.preventDefault();
+        var result = $('#result');
+        $.ajax({
+          type: "POST",
+          url: '/login',
+          data: {
+            login_username : $('#login_username').val(),
+            login_password : $('#login_password').val()
+          },
+          success: function(msg){
+            if(msg == "-2"){result.html("Please make sure all fields are filled in.");}
+            else if(msg == "-1"){result.html("The password or username you entered was incorrect.");}
+            else{
+              console.log(msg);
+            }
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown){
+            console.log("Error" + errorThrown);
+          }
+        });
+      });
+    $('#register').submit(function(e){
+      e.preventDefault();
+      var result = $('#registerResult');
+      $.ajax({
+        type: "POST",
+        url: '/register',
+        data: {
+          register_username : $('#register_username').val(),
+          register_password : $('#register_password').val(),
+          register_name : $('#register_name').val()
+        },
+        success: function(msg){
+          if(msg == "-2"){result.html("Please make sure all fields are filled in.");}
+          else if(msg == "-3"){result.html("The username you entered is already in use.");}
+          else{
+            console.log(msg);
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+          console.log("Error" + errorThrown);
+        }
+      });
+    });
+  </script>

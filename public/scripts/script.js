@@ -14,11 +14,13 @@ $('#calcForm').change(function(){
 	toggleWeight();
 })
 function toggleWeight(){
-	var select = document.getElementById("calcFormSelect").value;
-	if(select == 'post'){
-		document.getElementById("weightRow").style.display = "none";
-	}else{
-		document.getElementById("weightRow").style.display = "table-row";
+	if(document.getElementById("calcFormSelect")){
+		var select = document.getElementById("calcFormSelect").value;
+		if(select == 'post'){
+			document.getElementById("weightRow").style.display = "none";
+		}else{
+			document.getElementById("weightRow").style.display = "table-row";
+		}
 	}
 }
 var arr = [];

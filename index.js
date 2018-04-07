@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-
+var tools = require('./tools.js');
 var dotenv = require('dotenv');
 dotenv.load();
 
@@ -48,7 +48,7 @@ app.post('/login', function(req,res){
         if(users.password != loginPassword){
           res.send("-1");
         }else{
-          res.redirect('/contacts?id=' + users.user_id);
+          res.send({id:users.user_id});
         }
       }else{
         res.send("-2");
@@ -73,28 +73,77 @@ app.post('/register', function(req,res){
       })
       .catch(error =>{
         if(error.received == "0"){
-          console.log("creating new user"); //todo
-          var user_id = genID();
-          console.log("user_id: " + user_id);
+          var user_id = tools.genId();
           db.none('INSERT INTO users(username, password, user_id, name)values($1, $2, $3, $4)',[registerUsername, registerPassword,user_id,registerName]).then().catch();
-          res.redirect('/contacts?id=' + user_id);
+          res.send({id:user_id});
         }else{
           console.log(error);
         }
       });
     }else{
-      res.send("-2")
+      res.send("-2");
     }
   }else{
     res.send("-2");
   }
 });
-app.get('/guest', function(req,res){
-  id = genID();
-  res.redirect('/contacts?id=' + id);
+app.get('/contacts', function(req,res){
+  var backupid = tools.genId();
+  res.render('pages/contacts', {id:backupid,path: req.path});
 });
-app.post('/contact', function(req,res){
-  res.render('pages/contacts', {id: id});
+app.post('/getContacts', function(req, res){
+  var user = req.body.user;
+  db.any("SELECT * FROM leads WHERE user_id = $1", user)
+    .then(result=>{
+      res.send({results:result});
+    })
+    .catch(error=>{
+      console.log(error);
+    });
+});
+app.post('/deleteContact', function(req, res){
+  var user = req.body.user;
+  var index = req.body.index;
+  db.any("DELETE FROM leads WHERE user_id = $1 AND index = $2", [user, index])
+    .then(result=>{
+      console.log(results);
+      res.send({results:result});
+    })
+    .catch(error=>{
+      console.log(error);
+    });
+});
+app.post('/newContact', function(req, res){
+  var user = req.body.user;
+  var index = req.body.index;
+  var name = req.body.name;
+  var company = req.body.company;
+  var title = req.body.title;
+  var phone = req.body.phone;
+  var email = req.body.email;
+  db.any("INSERT INTO leads (index, name, company, title, phone, email, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7)", [index, name, company, title, phone, email, user])
+    .then(result=>{
+      res.send({results:result});
+    })
+    .catch(error=>{
+      console.log(error);
+    });
+});
+app.post('/updateContact', function(req, res){
+  var user = req.body.user;
+  var index = req.body.index;
+  var name = req.body.name;
+  var company = req.body.company;
+  var title = req.body.title;
+  var phone = req.body.phone;
+  var email = req.body.email;
+  db.any("UPDATE leads SET user = $1, index = $2, name = $3, company = $4, title = $5, phone = $6, email = $7 WHERE user_id = $1 AND index = $2", [user, index])
+    .then(result=>{
+      res.send({results:result});
+    })
+    .catch(error=>{
+      console.log(error);
+    });
 });
 app.get('/postalCalc', function(req,res){
   res.render('pages/postalCalc')
@@ -110,26 +159,3 @@ app.post('/getRate',function(req,res){
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
-function genID(){
-  var rnd = Math.floor(Math.random() * 10000000000) + 1;
-  var stop = false;
-  while(stop = false){
-    console.log("trying to find number" + rnd);
-    db.one('SELECT user_id FROM users WHERE user_id=$1', rnd)
-    .then(id=>{
-      console.log("Function: genID, id - "+id.user_id+" - present");
-      rnd = Math.floor(Math.random() * 10000000000) + 1;
-      stop = false;
-    })
-    .catch(error=>{
-      if(error.received = "0"){
-        console.log("Found new id");
-        stop = true;
-      }else{
-        console.log(error);
-        stop = true;
-      }
-    });
-  }
-  return rnd;
-}

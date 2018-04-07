@@ -1,11 +1,55 @@
 <% include ../partials/header.ejs %>
+<% include ../partials/functions %>
 <meta name="description" content="LEADer is a leads app specifically for trade shows or areas with little to no internet. The main appeal is that it is still a web applicaiton while being useful offline.">
 <title>LEADer - Home</title>
+<script>
+    if(localStorage.getItem("session_id")){
+        isLogged = true;
+    }else{
+        localStorage.setItem("session_id",<%- id %>);
+        isLogged = false;
+    }
+    console.log("Logged in? " + isLogged + ". The user is: " + localStorage.getItem("session_id"));
+    var contacts;
+    
+    $(window).on('load', function(){
+        $.ajax({
+            type: "POST",
+            url: '/getContacts',
+            data: {
+            user : localStorage.getItem("session_id")
+            },
+            success: function(msg){
+                console.log(msg);
+                loadContacts(msg.results);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+            console.log("Error" + errorThrown);
+            }
+        });
+    });
+</script>
 </head>
 <body>
-
 <% include ../partials/nav.ejs %>
+<p>Testing breadcrumb function: <%= breadcrumb(path) %></p>
 <div id="content">
-    <p>Your id is <%= id %></p>
+<table id="contactsTable">
+    <tr>
+        <th class="col2">Edit</th>
+        <th class="col1">#</th>
+        <th class="col3">Name</th>
+        <th class="col3">Company</th>
+        <th class="col3">Title</th>
+        <th class="col3">Phone</th>
+        <th class="col3">Email</th>
+    </tr>
+</table>
+<div id="modifyBtns">
+    <button type="button" class="btn btn-default btn-sm save"><span class="glyphicon glyphicon-save"></span> Save</button>
+    <button type="button" class="btn btn-default btn-sm add"><span class="glyphicon glyphicon-plus"></span> Add</button>
 </div>
+</div>
+<script>
+</script>
 <% include ../partials/footer.ejs %>

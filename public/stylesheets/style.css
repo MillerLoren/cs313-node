@@ -59,37 +59,6 @@
 	width:30%;
 	padding-right:15px;
 }
-/*Products Page*/
-#grid{
-	width: 100%;
-	margin: 0 0 0 0;
-}
-.shopItem{
-	display: inline-block;
-	width: 320px;
-	height: 350px;
-	position: relative;
-	border: #adadad solid 1px;
-	box-sizing: border-box;
-    -moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-}
-.shopItem img{
-	height: 180px;
-	margin:auto;
-	padding: 10px;
-	display: block;
-}
-.itemInfo{
-	padding: 5px;
-}
-.shopImage{
-	width: 100%;
-}
-#cartForm{
-	float: right;
-	width: 120px;
-}
 /*tables*/
 #table{
     border-collapse: collapse;
@@ -119,10 +88,11 @@
     border-collapse: collapse;
 	width: 100%;
 	margin-top: 25px;
+	font-size: 12px;
 }
 #contactsTable td, #contactsTable th {
     border: 1px solid rgb(221, 221, 221);
-	padding: 8px;
+	padding: 5px;
 	max-width: 150px;
 	text-align: center;
 }
@@ -135,6 +105,16 @@
 }
 #postalCalcTable tr{
 	height: 35px;
+}
+/*Columns*/
+.col1{
+	width: 2%;
+}
+.col2{
+	width: 8%;
+}
+.col3{
+	width: 16%;
 }
 /*Scanner - Home*/
 #camera{
@@ -181,61 +161,10 @@
 	margin-top:25px;
 }
 /*Scanner - Contacts*/
-#modifyContacts{
-	position: relative;
-}
-#modifyContacts input[type=text]{
-	max-width: 150px;
-}
-.trash{
-	background : url("../../Images/trash.png") no-repeat center center !important;
-	background-size: 25px 25px !important;
-	width: 25px !important;
-	height:25px !important;
-	display:inline-block !important;
-	vertical-align: middle !important;
-	border : none !important;
-	color : transparent !important;
-	font-size : 0 !important;
-    background-color:none !important;
-    padding:0px !important;
-    text-align: center !important;
-    text-decoration: none !important;
-}
-.cancel{
-	width: 20px;
-	height:20px;
-	padding:2px;
-	display:inline-block;
-	vertical-align: middle;
-}
-.check{
-	background : url("../../Images/check.png") no-repeat center center !important;
-	background-size: 20px 20px !important;
-	width: 20px !important;
-	height:20px !important;
-	display:inline-block !important;
-	vertical-align: middle !important;
-	border : none !important;
-	color : transparent !important;
-	font-size : 0 !important;
-    background-color:none !important;
-    padding:0px !important;
-    text-align: center !important;
-    text-decoration: none !important;
-}
-.edit{
-	width: 25px;
-	height:25px;
-	display:inline-block;
-	vertical-align: middle;
-}
-.add{
-	width: 25px;
-	height: 25px;
-	position: absolute;
-	bottom:0px;
-	right: -25px;
+#modifyBtns{
+	width:150px;
+	position: fixed;
+	bottom: 25px;
 }
 /*Mobile Devices*/
 @media (max-width: 700px) {

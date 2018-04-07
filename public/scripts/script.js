@@ -1,14 +1,11 @@
 $(window).on('resize', toggle);
 $(window).on('load', toggle);
 $(window).on('load', toggleWeight);
-$(".edit").on('click',function() {
-	editContact(this.closest( "tr" ));
-});
 $(".add").on('click',function() {
 	addContact();
 });
-$(".trash").on('click',function() {
-	deleteContact(this.closest( "tr" ));
+$('.save').on('click',function(){
+	saveContacts();
 });
 $('#calcForm').change(function(){
 	toggleWeight();
@@ -23,57 +20,76 @@ function toggleWeight(){
 		}
 	}
 }
-var arr = [];
-var cartCount = 0;
-function editContact(tr){
-	var max = tr.childNodes.length;
-	for(var i = 0; i < max; i++){
-		var text = tr.childNodes[i].innerText || tr.childNodes[i].textContent;
-		var td = $("<td></td>");
+function editContact(btn){
+	var tr = $(btn).closest('tr');
+	var content = new Array(6);
+	tr.children('td').each(function(i){
+		if(i != 0){
+			content[i-1] = this.innerHTML;
+		}
 		switch(i){
-			case 0:
-				var input = text;
-			break;
-			case 1:
-				var input = "<input name='num' type='hidden' value='" + tr.childNodes[1].childNodes[0].value + "'/><input name='name' type='text' value='" + text + "'/>";
-			break;
 			case 2:
-				var input = "<input name='email' type='text' value='" + text + "'/>";
+				this.innerHTML = '<input type="text" name="name[]" value="'+this.innerHTML+'"/>';
 			break;
 			case 3:
-				var input = "<input name='phone' type='text' value='" + text + "'/>";
+				this.innerHTML = '<input type="text" name="company[]" value="'+this.innerHTML+'"/>';
 			break;
 			case 4:
-				var input = "<input name='company' type='text' value='" + text + "'/>";
+				this.innerHTML = '<input type="text" name="title[]" value="'+this.innerHTML+'"/>';
 			break;
 			case 5:
-				var input = "<input name='title' type='text' value='" + text + "'/>";
+				this.innerHTML = '<input type="text" name="phone[]" value="'+this.innerHTML+'"/>';
 			break;
 			case 6:
-				var input = "<input type='submit' class='check' name='update' />/<img class='cancel' onclick='cancelEdit()' src='../../Images/cancel.png' />"
+				this.innerHTML = '<input type="text" name="email[]" value="'+this.innerHTML+'"/><input type="hidden" value="'+content+'"/>';
+			break;
+			case 0:
+				this.innerHTML = '<input type="hidden" name="new[]" value="false"/><input type="hidden" name="delete[]" value="false"/><input type="hidden" name="update[]" value="true"/><button type="button" class="btn btn-default btn-sm" onClick="cancelUpdate(this)"><span class="glyphicon glyphicon-remove"></span></button>';
+			break;
+			case 1:
+				this.innerHTML = this.innerHTML;
 			break;
 		}
-		tr.childNodes[i].innerHTML = input;
-		$(".edit").remove();
-		$(".trash").remove();
-		$(".add").remove();
-	}
+	});
 }
-function cancelEdit(){
-	location.reload();
+function cancelUpdate(btn){
+	var tr = $(btn).closest('tr');
+	var content = tr.children('td').last().find('input[type="hidden"]').val().split(',');
+	tr.children('td').each(function(i){
+		if(i!=0){
+			this.innerHTML = content[i-1];
+		}else{
+			this.innerHTML = '<input type="hidden" name="new[]" value="false"/><input type="hidden" name="delete[]" value="false"/><input type="hidden" name="update[]" value="false"/><button type="button" class="btn btn-default btn-sm" onClick="deleteContact(this)"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm edit" onClick="editContact(this)"><span class="glyphicon glyphicon-edit"></span></button>';
+		}
+	});
 }
 function addContact(){
-	var table = $("#contactsTable tr:last");
-	var num = $("#contactsTable tr").length;
-	var tr = "<tr><td>" + num + "</td><td><input name='name' type='text' value=''></td><td><input name='email' type='text' value=''></td><td><input name='phone' type='text' value=''></td><td><input name='company' type='text' value=''></td><td><input name='title' type='text' value=''></td><td><input type='submit' class='check' name='add' src='../../Images/check.png'>/<img class='cancel' onclick='cancelEdit()' src='../../Images/cancel.png'></td></tr>";
-	table.after(tr);
-	$(".edit").remove();
-	$(".trash").remove();
-	$(".add").remove();
+	var num = $('#contactsTable tr').length;
+	console.log(num);
+	var tr = $('<tr>').html(
+		'<td><input type="hidden" name="new[]" value="true"/><input type="hidden" name="delete[]" value="false"/><input type="hidden" name="update[]" value="false"/><button type="button" class="btn btn-default btn-sm" onClick="deleteNewContact(this)"><span class="glyphicon glyphicon-trash"></span></button></td>'
+		+'<td>'+num+'</td>'
+		+'<td><input type="text" name="name[]" value="" placeholder="Name"/></td>'
+		+'<td><input type="text" name="company[]" value=""placeholder="Company"/></td>'
+		+'<td><input type="text" name="title[]" value=""placeholder="Title"/></td>'
+		+'<td><input type="text" name="phone[]" value=""placeholder="Phone"/></td>'
+		+'<td><input type="text" name="email[]" value=""placeholder="Email"/></td>').hide();
+	$('#contactsTable > tbody:last-child').append(tr);
+	tr.fadeIn(200);
 }
-function deleteContact(tr){
-	tr.childNodes[0].innerHTML = "<input name='num' type='hidden' value='" + tr.childNodes[1].childNodes[0].value + "'/>" + tr.childNodes[0].innerHTML;
-
+function deleteContact(btn){
+	$(btn).closest('tr').children('td').first().html('<input type="hidden" name="new[]" value="false"/><input type="hidden" name="delete[]" value="true"/><input type="hidden" name="update[]" value="false"/><button type="button" class="btn btn-default btn-sm" onClick="undeleteContact(this)"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm edit" onClick="" disabled><span class="glyphicon glyphicon-edit"></span></button>');
+}
+function undeleteContact(btn){
+	$(btn).closest('tr').children('td').first().html('<input type="hidden" name="new[]" value="false"/><input type="hidden" name="delete[]" value="false"/><input type="hidden" name="update[]" value="false"/><button type="button" class="btn btn-default btn-sm" onClick="deleteContact(this)"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm edit" onClick="editContact(this)"><span class="glyphicon glyphicon-edit"></span></button>');
+}
+function deleteNewContact(btn){
+	$(btn).closest('tr').remove();
+	$('#contactsTable tr').each(function(i){
+		if(i!=0){
+			$(this).children('td')[1].innerHTML = i;
+		}
+	});
 }
 function toggle(){
 	var win = $(this); //this = window
@@ -91,6 +107,8 @@ function toggle(){
 	  $(btn).removeClass('show');
 	  $(btn).addClass('hide');
 	}
+	add = $('#modifyBtns');
+	add.css("left", ((($(window).width()/2) + ($('#content').width() / 2))-150));
 }
 function menu(){
 	var ul = document.getElementById("menu");
@@ -102,38 +120,125 @@ function menu(){
 		$(ul).addClass('hide');
 	}
 }
-function addToCart(item){
-	console.log("Item Number", item);
-	var div = document.getElementById(item);
-	var hidden = document.getElementById("viewCart");
-	var hidden1 = document.getElementById("viewCart1");
-	var hidden2 = document.getElementById("viewCart2");
-	var hidden3 = document.getElementById("viewCart3");
-	var quantity = document.getElementsByClassName("quantity")[item - 1].value;
-	console.log("Quantity", quantity);
-	if(quantity > 0 && quantity != "" && quantity != 0){
-		console.log("Switch", item);
-		switch(item){
-			case 1:
-				var tempArr = {Game:"Ark: Survival Evolved", Price:"$39.99", Quantity:quantity};
-				arr[0] = tempArr;
-				hidden1.value = "";
-				hidden1.value = JSON.stringify(arr);
-				break;
-			case 2:
-				var tempArr = {Game:"Overwatch", Price:"$59.99", Quantity:quantity};
-				arr[1] = tempArr;
-				hidden2.value = "";
-				hidden2.value = JSON.stringify(arr);
-				break;
-			case 3:
-				var tempArr = {Game:"RocketLeague", Price:"$29.99", Quantity:quantity};
-				arr[2] = tempArr;
-				hidden3.value = "";
-				hidden3.value = JSON.stringify(arr);
-				break;
-		}
+function loadContacts(c){
+	if($('#contactsTable tr').length > 1){
+		$('#contactsTable tr').each(function(){
+			$(this).remove();
+		});
 	}
-	hidden.value = "";
-	hidden.value = JSON.stringify(arr);
+	for(var i = 0; i < c.length; i++){
+		console.log("Added row #", i);
+		var tr = $('<tr>').html(
+			'<td><input type="hidden" name="new[]" value="false"/><input type="hidden" name="delete[]" value="false"/><input type="hidden" name="update[]" value="false"/><button type="button" class="btn btn-default btn-sm" onClick="deleteContact(this)"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm edit" onClick="editContact(this)"><span class="glyphicon glyphicon-edit"></span></button></td>'
+			+'<td>'+c[i].index+'</td>'
+			+'<td>'+c[i].name+'</td>'
+			+'<td>'+c[i].company+'</td>'
+			+'<td>'+c[i].title+'</td>'
+			+'<td>'+c[i].phone+'</td>'
+			+'<td>'+c[i].email+'</td>').hide();
+		$('#contactsTable > tbody:last-child').append(tr);
+		showRows(tr, i);
+	}
+}
+function showRows(tr, i){
+    setTimeout(function(){
+        tr.fadeIn(200);
+    }, 200 * i);
+}
+function saveContacts(){
+	$('#contactsTable tr').each(function(i){
+		if(i!=0){
+			var index, name, company, title, phone, email;
+			var data = {};
+			if($(this).find('td:nth-child(0)').find('input[name="delete[]"]').val() == true){
+				index = $(this).find('td:nth-child(1)').html();
+				data['user'] = localStorage.getItem("session_id");
+				data['index'] = index;
+				postDelete(data);
+			}else if($(this).find('td:nth-child(0)').find('input[name="new[]"]').val() == true){
+				index = $(this).find('td:nth-child(1)').html();
+				name = $(this).find('td:nth-child(2)').find('input').val();
+				company = $(this).find('td:nth-child(3)').find('input').val();
+				title = $(this).find('td:nth-child(4)').find('input').val();
+				phone = $(this).find('td:nth-child(5)').find('input').val();
+				email = $(this).find('td:nth-child(6)').find('input').val();
+				data['user'] = localStorage.getItem("session_id");
+				data['index'] = index;
+				data['name'] = name;
+				data['company'] = company;
+				data['title'] = title;
+				data['phone'] = phone;
+				data['email'] = email;
+				postNew(data);
+			}else if($(this).find('td:nth-child(0)').find('input[name="update[]"]').val() == true){
+				index = $(this).find('td:nth-child(1)').html();
+				name = $(this).find('td:nth-child(2)').find('input').val();
+				company = $(this).find('td:nth-child(3)').find('input').val();
+				title = $(this).find('td:nth-child(4)').find('input').val();
+				phone = $(this).find('td:nth-child(5)').find('input').val();
+				email = $(this).find('td:nth-child(6)').find('input').val();
+				data['user'] = localStorage.getItem("session_id");
+				data['index'] = index;
+				data['name'] = name;
+				data['company'] = company;
+				data['title'] = title;
+				data['phone'] = phone;
+				data['email'] = email;
+				postUpdate(data);
+			}
+		}
+	});
+	$.ajax({
+		type: "POST",
+		url: '/getContacts',
+		data: {
+		user : localStorage.getItem("session_id")
+		},
+		success: function(msg){
+			console.log(msg);
+			loadContacts(msg.results);
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown){
+		console.log("Error" + errorThrown);
+		}
+	});
+}
+function postDelete(item){
+	$.ajax({
+		type: "POST",
+		url: '/deleteContact',
+		data: item,
+		success: function(msg){
+			console.log(msg);
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown){
+		console.log("Error" + errorThrown);
+		}
+	});
+}
+function postNew(item){
+	$.ajax({
+		type: "POST",
+		url: '/newContact',
+		data: item,
+		success: function(msg){
+			console.log(msg);
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown){
+		console.log("Error" + errorThrown);
+		}
+	});
+}
+function postUpdate(item){
+	$.ajax({
+		type: "POST",
+		url: '/updateContact',
+		data: item,
+		success: function(msg){
+			console.log(msg);
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown){
+		console.log("Error" + errorThrown);
+		}
+	});
 }

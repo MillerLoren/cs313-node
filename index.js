@@ -104,14 +104,16 @@ app.post('/getContacts', function(req, res){
 app.post('/deleteContact', function(req, res){
   var user = req.body.user;
   var index = req.body.index;
-  db.any("DELETE FROM leads WHERE user_id = $1 AND index = $2", [user, index])
+  db.none("DELETE FROM leads WHERE user_id = $1 AND index = $2", [user, index])
     .then(result=>{
-      console.log(results);
       res.send({results:result});
     })
     .catch(error=>{
       console.log(error);
     });
+});
+app.get('/logout', function(req, res){
+  res.render('pages/logout')
 });
 app.post('/newContact', function(req, res){
   var user = req.body.user;
@@ -121,7 +123,7 @@ app.post('/newContact', function(req, res){
   var title = req.body.title;
   var phone = req.body.phone;
   var email = req.body.email;
-  db.any("INSERT INTO leads (index, name, company, title, phone, email, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7)", [index, name, company, title, phone, email, user])
+  db.none("INSERT INTO leads (index, name, company, title, phone, email, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7)", [index, name, company, title, phone, email, user])
     .then(result=>{
       res.send({results:result});
     })
@@ -137,7 +139,7 @@ app.post('/updateContact', function(req, res){
   var title = req.body.title;
   var phone = req.body.phone;
   var email = req.body.email;
-  db.any("UPDATE leads SET user = $1, index = $2, name = $3, company = $4, title = $5, phone = $6, email = $7 WHERE user_id = $1 AND index = $2", [user, index])
+  db.any("UPDATE leads SET user_id = $1, index = $2, name = $3, company = $4, title = $5, phone = $6, email = $7 WHERE user_id = $1 AND index = $2", [user, index, name, company, title, phone, email])
     .then(result=>{
       res.send({results:result});
     })

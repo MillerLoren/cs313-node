@@ -1,7 +1,13 @@
 <%
     breadcrumb = function(path){
         if(path == "/contacts"){
-            return true;
+            var obj = {
+                "Home":"/",
+                "Login":"/LEADer", 
+                "Logout":"/logout", 
+                "Contacts":"/contacts"
+            }
+            return obj;
         }else{
             
         }

@@ -25,7 +25,7 @@ function editContact(btn){
 	var content = new Array(6);
 	tr.children('td').each(function(i){
 		if(i != 0){
-			content[i-1] = this.innerHTML;
+			content[i-1] = $(this).text();
 		}
 		switch(i){
 			case 2:
@@ -64,11 +64,16 @@ function cancelUpdate(btn){
 	});
 }
 function addContact(){
-	var num = $('#contactsTable tr').length;
+	var num;
+	if($('#contactsTable tr').last().find('td:nth-child(2)').find('input').val()){
+		num = Number($('#contactsTable tr').last().find('td:nth-child(2)').find('input').val()) + 1;
+	}else{
+		num = 1;
+	}
 	console.log(num);
 	var tr = $('<tr>').html(
 		'<td><input type="hidden" name="new[]" value="true"/><input type="hidden" name="delete[]" value="false"/><input type="hidden" name="update[]" value="false"/><button type="button" class="btn btn-default btn-sm" onClick="deleteNewContact(this)"><span class="glyphicon glyphicon-trash"></span></button></td>'
-		+'<td>'+num+'</td>'
+		+'<td><input type="hidden" name="index[]" value="'+num+'"/>'+$('#contactsTable tr').length+'</td>'
 		+'<td><input type="text" name="name[]" value="" placeholder="Name"/></td>'
 		+'<td><input type="text" name="company[]" value=""placeholder="Company"/></td>'
 		+'<td><input type="text" name="title[]" value=""placeholder="Title"/></td>'
@@ -79,9 +84,11 @@ function addContact(){
 }
 function deleteContact(btn){
 	$(btn).closest('tr').children('td').first().html('<input type="hidden" name="new[]" value="false"/><input type="hidden" name="delete[]" value="true"/><input type="hidden" name="update[]" value="false"/><button type="button" class="btn btn-default btn-sm" onClick="undeleteContact(this)"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm edit" onClick="" disabled><span class="glyphicon glyphicon-edit"></span></button>');
+	$(btn).closest('tr').children('td').css('text-decoration','line-through');
 }
 function undeleteContact(btn){
 	$(btn).closest('tr').children('td').first().html('<input type="hidden" name="new[]" value="false"/><input type="hidden" name="delete[]" value="false"/><input type="hidden" name="update[]" value="false"/><button type="button" class="btn btn-default btn-sm" onClick="deleteContact(this)"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm edit" onClick="editContact(this)"><span class="glyphicon glyphicon-edit"></span></button>');
+	$(btn).closest('tr').children('td').css('text-decoration','none');
 }
 function deleteNewContact(btn){
 	$(btn).closest('tr').remove();
@@ -122,15 +129,17 @@ function menu(){
 }
 function loadContacts(c){
 	if($('#contactsTable tr').length > 1){
-		$('#contactsTable tr').each(function(){
-			$(this).remove();
+		$('#contactsTable tr').each(function(i){
+			if(i != 0){
+				$(this).remove();
+			}
 		});
 	}
 	for(var i = 0; i < c.length; i++){
 		console.log("Added row #", i);
 		var tr = $('<tr>').html(
 			'<td><input type="hidden" name="new[]" value="false"/><input type="hidden" name="delete[]" value="false"/><input type="hidden" name="update[]" value="false"/><button type="button" class="btn btn-default btn-sm" onClick="deleteContact(this)"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm edit" onClick="editContact(this)"><span class="glyphicon glyphicon-edit"></span></button></td>'
-			+'<td>'+c[i].index+'</td>'
+			+'<td><input type="hidden" name"index[] value="'+c[i].index+'">'+(i+1)+'</td>'
 			+'<td>'+c[i].name+'</td>'
 			+'<td>'+c[i].company+'</td>'
 			+'<td>'+c[i].title+'</td>'
@@ -139,6 +148,7 @@ function loadContacts(c){
 		$('#contactsTable > tbody:last-child').append(tr);
 		showRows(tr, i);
 	}
+	$('#result').html("")
 }
 function showRows(tr, i){
     setTimeout(function(){
@@ -150,18 +160,18 @@ function saveContacts(){
 		if(i!=0){
 			var index, name, company, title, phone, email;
 			var data = {};
-			if($(this).find('td:nth-child(0)').find('input[name="delete[]"]').val() == true){
-				index = $(this).find('td:nth-child(1)').html();
+			if($(this).find('input[name="delete[]"]').val() == "true"){
+				index = $(this).find('td:nth-child(2)').find('input').val();
 				data['user'] = localStorage.getItem("session_id");
 				data['index'] = index;
 				postDelete(data);
-			}else if($(this).find('td:nth-child(0)').find('input[name="new[]"]').val() == true){
-				index = $(this).find('td:nth-child(1)').html();
-				name = $(this).find('td:nth-child(2)').find('input').val();
-				company = $(this).find('td:nth-child(3)').find('input').val();
-				title = $(this).find('td:nth-child(4)').find('input').val();
-				phone = $(this).find('td:nth-child(5)').find('input').val();
-				email = $(this).find('td:nth-child(6)').find('input').val();
+			}else if($(this).find('input[name="new[]"]').val() == "true"){
+				index = $(this).find('td:nth-child(2)').find('input').val();
+				name = $(this).find('td:nth-child(3)').find('input').val();
+				company = $(this).find('td:nth-child(4)').find('input').val();
+				title = $(this).find('td:nth-child(5)').find('input').val();
+				phone = $(this).find('td:nth-child(6)').find('input').val();
+				email = $(this).find('td:nth-child(7)').find('input').val();
 				data['user'] = localStorage.getItem("session_id");
 				data['index'] = index;
 				data['name'] = name;
@@ -170,13 +180,13 @@ function saveContacts(){
 				data['phone'] = phone;
 				data['email'] = email;
 				postNew(data);
-			}else if($(this).find('td:nth-child(0)').find('input[name="update[]"]').val() == true){
-				index = $(this).find('td:nth-child(1)').html();
-				name = $(this).find('td:nth-child(2)').find('input').val();
-				company = $(this).find('td:nth-child(3)').find('input').val();
-				title = $(this).find('td:nth-child(4)').find('input').val();
-				phone = $(this).find('td:nth-child(5)').find('input').val();
-				email = $(this).find('td:nth-child(6)').find('input').val();
+			}else if($(this).find('input[name="update[]"]').val() == "true"){
+				index = $(this).find('td:nth-child(2)').find('input').val();
+				name = $(this).find('td:nth-child(3)').find('input').val();
+				company = $(this).find('td:nth-child(4)').find('input').val();
+				title = $(this).find('td:nth-child(5)').find('input').val();
+				phone = $(this).find('td:nth-child(6)').find('input').val();
+				email = $(this).find('td:nth-child(7)').find('input').val();
 				data['user'] = localStorage.getItem("session_id");
 				data['index'] = index;
 				data['name'] = name;
@@ -188,57 +198,77 @@ function saveContacts(){
 			}
 		}
 	});
-	$.ajax({
-		type: "POST",
-		url: '/getContacts',
-		data: {
-		user : localStorage.getItem("session_id")
-		},
-		success: function(msg){
-			console.log(msg);
-			loadContacts(msg.results);
-		},
-		error: function(XMLHttpRequest, textStatus, errorThrown){
-		console.log("Error" + errorThrown);
-		}
-	});
+	setTimeout(function(){
+		$.ajax({
+			type: "POST",
+			url: '/getContacts',
+			data: {
+			user : localStorage.getItem("session_id")
+			},
+			success: function(msg){
+				console.log(msg);
+				loadContacts(msg.results);
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown){
+			console.log("Error" + errorThrown);
+			}
+		});
+	}, 500);
+}
+function updateIndex(x){
 }
 function postDelete(item){
+	var bool = 0;
+	console.log('Deleting');
 	$.ajax({
 		type: "POST",
 		url: '/deleteContact',
 		data: item,
 		success: function(msg){
 			console.log(msg);
+			bool = 1;
 		},
 		error: function(XMLHttpRequest, textStatus, errorThrown){
-		console.log("Error" + errorThrown);
+			console.log("Error" + errorThrown);
+			bool = 0;
 		}
 	});
+	console.log(bool);
+	return bool;
 }
 function postNew(item){
+	var bool = 0;
+	console.log('Adding');
 	$.ajax({
 		type: "POST",
 		url: '/newContact',
 		data: item,
 		success: function(msg){
 			console.log(msg);
+			bool = 1;
 		},
 		error: function(XMLHttpRequest, textStatus, errorThrown){
-		console.log("Error" + errorThrown);
+			console.log("Error" + errorThrown);
+			bool = 0;
 		}
 	});
+	return bool;
 }
 function postUpdate(item){
+	var bool = 0;
+	console.log('Updating');
 	$.ajax({
 		type: "POST",
 		url: '/updateContact',
 		data: item,
 		success: function(msg){
 			console.log(msg);
+			bool = 1;
 		},
 		error: function(XMLHttpRequest, textStatus, errorThrown){
-		console.log("Error" + errorThrown);
+			console.log("Error" + errorThrown);
+			bool = 0;
 		}
 	});
+	return bool;
 }

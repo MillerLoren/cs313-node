@@ -6,10 +6,8 @@
     if(localStorage.getItem("session_id")){
         isLogged = true;
     }else{
-        localStorage.setItem("session_id",<%- id %>);
-        isLogged = false;
+        window.location.href = "/LEADer";
     }
-    console.log("Logged in? " + isLogged + ". The user is: " + localStorage.getItem("session_id"));
     var contacts;
     
     $(window).on('load', function(){
@@ -17,7 +15,7 @@
             type: "POST",
             url: '/getContacts',
             data: {
-            user : localStorage.getItem("session_id")
+                user : localStorage.getItem("session_id")
             },
             success: function(msg){
                 console.log(msg);
@@ -32,7 +30,12 @@
 </head>
 <body>
 <% include ../partials/nav.ejs %>
-<p>Testing breadcrumb function: <%= breadcrumb(path) %></p>
+<div id="bread">
+<% var obj = breadcrumb(path); %>
+<% for(var prop in obj){ %>
+    <a href="<%=obj[prop]%>"><%=prop%></a> >
+<% } %>
+</div>
 <div id="content">
 <table id="contactsTable">
     <tr>
@@ -45,6 +48,8 @@
         <th class="col3">Email</th>
     </tr>
 </table>
+<div id="result">
+</div>
 <div id="modifyBtns">
     <button type="button" class="btn btn-default btn-sm save"><span class="glyphicon glyphicon-save"></span> Save</button>
     <button type="button" class="btn btn-default btn-sm add"><span class="glyphicon glyphicon-plus"></span> Add</button>

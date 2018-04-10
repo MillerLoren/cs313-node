@@ -64,9 +64,14 @@ function cancelUpdate(btn){
 	});
 }
 function addContact(){
-	var num;
+	var num = 0;
 	if($('#contactsTable tr').last().find('td:nth-child(2)').find('input').val()){
-		num = Number($('#contactsTable tr').last().find('td:nth-child(2)').find('input').val()) + 1;
+		$('#contactsTable tr').each(function(){
+			if(Number($(this).find('td:nth-child(2)').find('input').val()) > num){
+				num = Number($(this).find('td:nth-child(2)').find('input').val());
+			}
+		});
+		num += 1;
 	}else{
 		num = 1;
 	}
